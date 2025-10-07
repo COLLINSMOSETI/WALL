@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visionary - Free Wallpapers</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff6b6b;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--light);
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .watermark {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.05;
+            font-size: 15vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: white;
+            transform: rotate(-30deg);
+        }
+        
+        header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent), var(--warning));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+        
+        nav ul li a:hover {
+            color: var(--accent);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .search-container {
+            display: flex;
+            margin: 2rem auto;
+            max-width: 600px;
+            padding: 0 1rem;
+        }
+        
+        .search-box {
+            flex: 1;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 50px 0 0 50px;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .search-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 0 50px 50px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #ff5252;
+        }
+        
+        .categories {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 0 1rem;
+        }
+        
+        .category {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .category:hover, .category.active {
+            background: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .wallpaper-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .wallpaper-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .wallpaper-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .wallpaper-info {
+            padding: 1rem;
+        }
+        
+        .wallpaper-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .wallpaper-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        .download-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .download-btn:hover {
+            background: #218838;
+        }
+        
+        .like-btn {
+            background: transparent;
+            color: var(--light);
+            border: 1px solid var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .like-btn:hover {
+            background: var(--light);
+            color: var(--dark);
+        }
+        
+        .dashboard-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--warning);
+            color: var(--dark);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        .dashboard-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dashboard {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .close-dashboard {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .dashboard-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .column {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        
+        .column h3 {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.8rem;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .upload-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .social-link:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                padding: 1rem;
+            }
+            
+            .dashboard-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="watermark">VISIONARY</div>
+    
+    <header>
+        <div class="logo">VISIONARY</div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">Categories</a></li>
+                <li><a href="#">Popular</a></li>
+                <li><a href="#">New</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search for wallpapers...">
+            <button class="search-btn">Search</button>
+        </div>
+        
+        <div class="categories">
+            <div class="category active">All</div>
+            <div class="category">Nature</div>
+            <div class="category">Football</div>
+            <div class="category">Basketball</div>
+            <div class="category">Gaming</div>
+            <div class="category">Cars</div>
+            <div class="category">Stars</div>
+        </div>
+        
+        <div class="gallery">
+            <!-- Wallpaper cards will be dynamically added here -->
+        </div>
+    </main>
+    
+    <button class="dashboard-btn" id="dashboardToggle">⚙️</button>
+    
+    <div class="dashboard" id="dashboard">
+        <div class="dashboard-header">
+            <h2>Admin Dashboard</h2>
+            <button class="close-dashboard" id="closeDashboard">Close</button>
+        </div>
+        
+        <div class="dashboard-columns">
+            <div class="column">
+                <h3>Upload Phone Wallpapers</h3>
+                <form class="upload-form" id="phoneUploadForm">
+                    <div class="form-group">
+                        <label for="phoneTitle">Title</label>
+                        <input type="text" id="phoneTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneCategory">Category</label>
+                        <select id="phoneCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="nature">Nature</option>
+                            <option value="football">Football</option>
+                            <option value="basketball">Basketball</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="cars">Cars</option>
+                            <option value="stars">Stars</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneImage">Upload Image</label>
+                        <input type="file" id="phoneImage" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="upload-btn">Upload Phone Wallpaper</button>
+                </form>
+            </div>
+            
+            <div class="column">
+                <h3>Upload Desktop Wallpapers</h3>
+                <form class="upload-form" id="desktopUploadForm">
+                    <div class="form-group">
+                        <label for="desktopTitle">Title</label>
+                        <input type="text" id="desktopTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="desktopCategory">Category</label>
+                        <select id="desktopCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="nature">Nature</option>
+                            <option value="football">Football</option>
+                            <option value="basketball">Basketball</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="cars">Cars</option>
+                            <option value="stars">Stars</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="desktopImage">Upload Image</label>
+                        <input type="file" id="desktopImage" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="upload-btn">Upload Desktop Wallpaper</button>
+                </form>
+            </div>
+            
+            <div class="column">
+                <h3>Contact Information</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div>
+                            <strong>Email</strong>
+                            <p>moseticollins20@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <div>
+                            <strong>Phone</strong>
+                            <p>+1 (123) 456-7890</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div>
+                            <strong>Address</strong>
+                            <p>123 Visionary Street, Creative City</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="column">
+                <h3>Website Statistics</h3>
+                <div class="stats">
+                    <p><strong>Total Wallpapers:</strong> <span id="totalWallpapers">12</span></p>
+                    <p><strong>Downloads Today:</strong> <span id="downloadsToday">47</span></p>
+                    <p><strong>Most Popular Category:</strong> <span id="popularCategory">Nature</span></p>
+                    <p><strong>New Uploads This Week:</strong> <span id="newUploads">5</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2023 Visionary Wallpapers. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#" class="social-link">📘</a>
+                <a href="#" class="social-link">📷</a>
+                <a href="#" class="social-link">🐦</a>
+                <a href="#" class="social-link">📺</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Sample wallpapers data
+        const wallpapers = [
+            { id: 1, title: "Mountain Landscape", category: "nature", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 2, title: "Football Stadium", category: "football", image: "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 3, title: "Basketball Court", category: "basketball", image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 4, title: "Gaming Setup", category: "gaming", image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 5, title: "Sports Car", category: "cars", image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 6, title: "Night Sky", category: "stars", image: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 7, title: "Forest Path", category: "nature", image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 8, title: "Football Player", category: "football", image: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 9, title: "Basketball Action", category: "basketball", image: "https://images.unsplash.com/photo-1519861155730-0b84f4e4b8e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 10, title: "Gaming Controller", category: "gaming", image: "https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 11, title: "Luxury Car", category: "cars", image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" },
+            { id: 12, title: "Galaxy", category: "stars", image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" }
+        ];
+
+        // DOM elements
+        const gallery = document.querySelector('.gallery');
+        const categories = document.querySelectorAll('.category');
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const dashboardToggle = document.getElementById('dashboardToggle');
+        const dashboard = document.getElementById('dashboard');
+        const closeDashboard = document.getElementById('closeDashboard');
+        const phoneUploadForm = document.getElementById('phoneUploadForm');
+        const desktopUploadForm = document.getElementById('desktopUploadForm');
+
+        // Initialize the gallery
+        function renderGallery(wallpapersToRender) {
+            gallery.innerHTML = '';
+            
+            wallpapersToRender.forEach(wallpaper => {
+                const card = document.createElement('div');
+                card.className = 'wallpaper-card';
+                card.innerHTML = `
+                    <img src="${wallpaper.image}" alt="${wallpaper.title}" class="wallpaper-img">
+                    <div class="wallpaper-info">
+                        <div class="wallpaper-title">${wallpaper.title}</div>
+                        <div class="wallpaper-actions">
+                            <button class="download-btn" data-id="${wallpaper.id}">Download</button>
+                            <button class="like-btn">❤️ Like</button>
+                        </div>
+                    </div>
+                `;
+                gallery.appendChild(card);
+            });
+            
+            // Add event listeners to download buttons
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    downloadWallpaper(id);
+                });
+            });
+        }
+
+        // Filter wallpapers by category
+        function filterByCategory(category) {
+            if (category === 'all') {
+                renderGallery(wallpapers);
+            } else {
+                const filtered = wallpapers.filter(wallpaper => wallpaper.category === category);
+                renderGallery(filtered);
+            }
+        }
+
+        // Search wallpapers
+        function searchWallpapers(query) {
+            const filtered = wallpapers.filter(wallpaper => 
+                wallpaper.title.toLowerCase().includes(query.toLowerCase())
+            );
+            renderGallery(filtered);
+        }
+
+        // Download wallpaper
+        function downloadWallpaper(id) {
+            const wallpaper = wallpapers.find(w => w.id == id);
+            if (wallpaper) {
+                // In a real application, this would trigger an actual download
+                alert(`Downloading: ${wallpaper.title}`);
+                // Track download statistics
+                const downloadsToday = document.getElementById('downloadsToday');
+                downloadsToday.textContent = parseInt(downloadsToday.textContent) + 1;
+            }
+        }
+
+        // Upload new wallpaper
+        function uploadWallpaper(type, title, category, imageFile) {
+            // In a real application, this would upload to a server
+            // For this demo, we'll just add to the local array
+            const newId = wallpapers.length + 1;
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const newWallpaper = {
+                    id: newId,
+                    title: title,
+                    category: category,
+                    image: e.target.result
+                };
+                
+                wallpapers.push(newWallpaper);
+                renderGallery(wallpapers);
+                
+                // Update statistics
+                const totalWallpapers = document.getElementById('totalWallpapers');
+                totalWallpapers.textContent = wallpapers.length;
+                
+                const newUploads = document.getElementById('newUploads');
+                newUploads.textContent = parseInt(newUploads.textContent) + 1;
+                
+                alert(`${type} wallpaper uploaded successfully!`);
+            };
+            
+            reader.readAsDataURL(imageFile);
+        }
+
+        // Event listeners
+        categories.forEach(category => {
+            category.addEventListener('click', function() {
+                categories.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                const categoryName = this.textContent.toLowerCase();
+                filterByCategory(categoryName);
+            });
+        });
+
+        searchBtn.addEventListener('click', () => {
+            searchWallpapers(searchBox.value);
+        });
+
+        searchBox.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                searchWallpapers(searchBox.value);
+            }
+        });
+
+        dashboardToggle.addEventListener('click', () => {
+            dashboard.style.display = 'block';
+        });
+
+        closeDashboard.addEventListener('click', () => {
+            dashboard.style.display = 'none';
+        });
+
+        phoneUploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('phoneTitle').value;
+            const category = document.getElementById('phoneCategory').value;
+            const imageFile = document.getElementById('phoneImage').files[0];
+            
+            if (title && category && imageFile) {
+                uploadWallpaper('Phone', title, category, imageFile);
+                phoneUploadForm.reset();
+            }
+        });
+
+        desktopUploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('desktopTitle').value;
+            const category = document.getElementById('desktopCategory').value;
+            const imageFile = document.getElementById('desktopImage').files[0];
+            
+            if (title && category && imageFile) {
+                uploadWallpaper('Desktop', title, category, imageFile);
+                desktopUploadForm.reset();
+            }
+        });
+
+        // Initialize the gallery on page load
+        renderGallery(wallpapers);
+    </script>
+</body>
+</html>
